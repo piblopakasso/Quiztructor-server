@@ -1,15 +1,23 @@
 import express from 'express';
-import { questionsData } from './questionsData';
+import cors from 'cors';
+import fs from 'fs/promises';
 
 const app = express();
 const PORT = 3000;
 
-app.get('/', (req, res) => {
-    res.send('Сервер працює!');
+app.use(cors());
+
+app.get('/questions', async (req, res) => {
+    try {
+        const data = await fs.readFile('./data/questions.json', 'utf-8');
+        res.json(JSON.parse(data));
+    } catch (error) {
+        res.status(500).json({ error: 'Помилка читання файлу' });
+    }
 });
 
-app.get('/questions', (req, res) => {
-    res.json(questionsData());
+app.get('/', (req, res) => {
+    res.send('Сервер працює!');
 });
 
 app.listen(PORT, () => {
